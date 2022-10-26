@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class VoteService {
@@ -36,6 +37,19 @@ public class VoteService {
     }
 
     public List<Vote> getAllVotes(){
-        return (List<Vote>) repository.findAllVotes();
+        return repository.findAllVotes();
+    }
+
+    public int getTotalVotesByReviewId(Long reviewId){
+        List<Vote> list = new ArrayList<>();
+        list = repository.findId(reviewId);
+        int sizeList = list.size();
+        int votes = 0;
+        for (int i=0; i<sizeList; i++){
+            if(list.get(i).isVote()){
+                votes++;
+            }
+        }
+        return votes;
     }
 }
