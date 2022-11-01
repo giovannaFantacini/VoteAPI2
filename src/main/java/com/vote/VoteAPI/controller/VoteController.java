@@ -1,12 +1,14 @@
 package com.vote.VoteAPI.controller;
 
 import com.vote.VoteAPI.model.Vote;
+import com.vote.VoteAPI.security.JwtRequestFilter;
 import com.vote.VoteAPI.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/votes")
@@ -31,9 +33,8 @@ public class VoteController {
     }
 
     @GetMapping(value = "/")
-    public List<Vote> getAllVotes(){
-        return service.getAllVotes();
-    }
+    public List<Vote> getAllVotes(){return service.getAllVotes();}
+
 
     @GetMapping(value = "/{reviewId}")
     public int getTotalVotesByReviewId(@PathVariable("reviewId") final Long reviewId ){

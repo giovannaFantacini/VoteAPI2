@@ -2,6 +2,7 @@ package com.vote.VoteAPI.service;
 
 import com.vote.VoteAPI.model.Vote;
 import com.vote.VoteAPI.repositories.VoteRepository;
+import com.vote.VoteAPI.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class VoteService {
     @Autowired
     private VoteRepository repository;
 
+
     public Vote updateVoteReview (Vote vote) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
@@ -30,6 +32,7 @@ public class VoteService {
 
         var code = response.statusCode();
         if(code == 200){
+
             return repository.save(vote);
         }else {
             return (Vote) response.body();
@@ -52,4 +55,5 @@ public class VoteService {
         }
         return votes;
     }
+
 }
