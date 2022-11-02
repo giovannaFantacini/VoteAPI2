@@ -1,0 +1,22 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":VoteController" as Ctrl
+participant ":VoteService" as Service
+participant ":VoteRepository" as Rep
+
+activate User
+
+User -> Ctrl: GET/votes/{reviewId}
+Ctrl -> Service: getTotalVotesByReviewId(reviewId)
+Service -> Rep: findId(reviewId)
+Rep --> Service: List<votes>
+Service --> Ctrl: int
+
+Ctrl --> User: int
+
+@enduml

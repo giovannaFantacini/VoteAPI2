@@ -1,0 +1,31 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":VoteController" as Ctrl
+participant ":VoteService" as Service
+participant ":VoteRepository" as Rep
+participant ":ReviewsApi" as Rev
+participant ":JwtUtils" as Utils
+
+activate User
+
+User -> Ctrl: POST/votes/updateVote
+Ctrl -> Service: voteReviewApproved(vote)
+Service -> Rev : GET/8081/reviews/status/{reviewId}
+Rev --> Service : APPROVED
+Service --> Ctrl: true
+Ctrl -> Service: updateVoteReview(vote)
+Service -> Utils: getUserFromJwtToken
+Utils --> Utils: getJwt()
+Utils --> Service: userId
+Service -> Rep: findReviewIdAndUserId(reviewId, userId)
+Rep --> Service: NULL
+Service --> Ctrl: vote
+
+Ctrl --> User: vote
+
+@enduml
