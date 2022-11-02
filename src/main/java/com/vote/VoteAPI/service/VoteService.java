@@ -1,6 +1,7 @@
 package com.vote.VoteAPI.service;
 
 import com.vote.VoteAPI.model.Vote;
+import com.vote.VoteAPI.repositories.ReviewRepository;
 import com.vote.VoteAPI.repositories.VoteRepository;
 import com.vote.VoteAPI.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +24,11 @@ public class VoteService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     public boolean voteReviewApproved (Vote vote) throws IOException, InterruptedException {
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create("http://localhost:8081/reviews/status/" + vote.getReviewId()))
-                .build();
-
-        HttpResponse response = client.send(request,
-                HttpResponse.BodyHandlers.ofString());
-
-        var code = response.statusCode();
-        if(code == 200){
-            String statusReview = response.body().toString();
-            if(statusReview.equals("APPROVED")) {
-                return true;
-            }
-        }
-        return false;
+        return reviewRepository.isApproved(vote.getReviewId());
     }
 
 
@@ -67,7 +54,7 @@ public class VoteService {
         try{
             userId = Long.valueOf(jwtUtils.getUserFromJwtToken(jwtUtils.getJwt()));
         }catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"You are logged");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"You are not logged");
         }
         Vote existVote = repository.findReviewIdAndUserId(vote.getReviewId(), userId);
         if(existVote == null){
