@@ -13,8 +13,12 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     @Query("SELECT v FROM Vote v WHERE v.reviewId = :reviewId")
     List<Vote> findId(Long reviewId);
 
+    @Query("SELECT v FROM Vote v WHERE v.reviewId = :reviewId AND v.userId = :userId")
+    Vote findReviewIdAndUserId(Long reviewId, Long userId);
+
     @Query("SELECT v FROM Vote v ")
     List<Vote> findAllVotes();
+
 
     Vote save(Vote vote);
 

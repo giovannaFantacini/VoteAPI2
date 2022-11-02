@@ -2,9 +2,11 @@ package com.vote.VoteAPI.service;
 
 import com.vote.VoteAPI.model.Vote;
 import com.vote.VoteAPI.repositories.VoteRepository;
-import com.vote.VoteAPI.security.JwtRequestFilter;
+import com.vote.VoteAPI.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,13 +20,15 @@ public class VoteService {
     @Autowired
     private VoteRepository repository;
 
+    @Autowired
+    private JwtUtils jwtUtils;
 
-    public Vote updateVoteReview (Vote vote) throws IOException, InterruptedException {
+    public boolean voteReviewApproved (Vote vote) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://localhost:8081/reviews/" + vote.getReviewId()))
+                .uri(URI.create("http://localhost:8081/reviews/status/" + vote.getReviewId()))
                 .build();
 
         HttpResponse response = client.send(request,
@@ -32,12 +36,14 @@ public class VoteService {
 
         var code = response.statusCode();
         if(code == 200){
-
-            return repository.save(vote);
-        }else {
-            return (Vote) response.body();
+            String statusReview = response.body().toString();
+            if(statusReview.equals("APPROVED")) {
+                return true;
+            }
         }
+        return false;
     }
+
 
     public List<Vote> getAllVotes(){
         return repository.findAllVotes();
@@ -54,6 +60,23 @@ public class VoteService {
             }
         }
         return votes;
+    }
+
+    public Vote updateVoteReview(Vote vote){
+        Long userId;
+        try{
+            userId = Long.valueOf(jwtUtils.getUserFromJwtToken(jwtUtils.getJwt()));
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"You are logged");
+        }
+        Vote existVote = repository.findReviewIdAndUserId(vote.getReviewId(), userId);
+        if(existVote == null){
+            vote.setUserId(userId);
+            return repository.save(vote);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"You have already voted on this review");
+        }
     }
 
 }

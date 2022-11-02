@@ -14,6 +14,9 @@ public class Vote {
     @Column
     private boolean vote;
 
+    @Column
+    private Long userId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
@@ -44,6 +47,14 @@ public class Vote {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Vote(Long reviewId, boolean vote) {
