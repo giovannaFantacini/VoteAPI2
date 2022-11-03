@@ -5,18 +5,14 @@ autoactivate on
 autonumber
 
 actor "User" as User
-participant ":VoteController" as Ctrl
-participant ":VoteService" as Service
-participant ":VoteRepository" as Rep
+participant ":VoteAPI" as vote1
+participant ":Vote" as vote2
 
 activate User
 
-User -> Ctrl: GET/votes/{reviewId}
-Ctrl -> Service: getTotalVotesByReviewId(reviewId)
-Service -> Rep: findId(reviewId)
-Rep --> Service: List<votes>
-Service --> Ctrl: int
-
-Ctrl --> User: int
+User -> vote1: GET/votes/{reviewId}
+vote1 -> vote2: GET/8085/votes/{reviewId}
+vote2 --> vote1: int
+vote1 --> User: int
 
 @enduml

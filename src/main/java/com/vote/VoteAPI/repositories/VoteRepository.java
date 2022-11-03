@@ -20,7 +20,5 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<Vote> findAllVotes();
 
 
-    Vote save(Vote vote);
-
 
 }
