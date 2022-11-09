@@ -10,10 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -64,6 +60,14 @@ public class VoteService {
         else{
             throw new ResponseStatusException(HttpStatus.CONFLICT,"You have already voted on this review");
         }
+    }
+
+    public Vote getVoteByReviewIdAndUserId(Long reviewId, Long userId){
+        Vote existVote = repository.findReviewIdAndUserId(reviewId, userId);
+        if(existVote != null){
+            return existVote;
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }

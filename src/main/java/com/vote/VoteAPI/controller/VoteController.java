@@ -37,5 +37,10 @@ public class VoteController {
         return service.getTotalVotesByReviewId(reviewId);
     }
 
+    @GetMapping(value = "/{reviewId}/{userId}")
+    public Vote getVoteByReviewIdAndUserId(@PathVariable("reviewId") final Long reviewId, @PathVariable("userId") final Long userId ){
+        return service.getVoteByReviewIdAndUserId(reviewId,userId);
+
+    }
 
 }
